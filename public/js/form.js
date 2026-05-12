@@ -12,7 +12,7 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // Honeypot — bots will fill this; humans cannot see it.
+    // Honeypot. Bots will fill this; humans cannot see it.
     if (form.company_url && form.company_url.value) {
       setStatus('Thanks. We will be in touch.', 'success');
       form.reset();
