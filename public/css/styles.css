@@ -161,18 +161,35 @@ p { margin: 0 0 14px; }
 .btn-ghost:hover { background: var(--navy); color: var(--white); }
 .btn-full { width: 100%; padding: 16px 24px; font-size: 1.05rem; }
 
-.trust-row {
-  list-style: none;
-  margin: 0;
-  padding: 28px 0 0;
-  border-top: 1px solid var(--line);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+.admissions-label {
+  margin: 28px 0 12px;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
 }
-.trust-row li { display: flex; flex-direction: column; gap: 4px; }
-.trust-num { font-family: var(--serif); font-size: 1.4rem; font-weight: 600; color: var(--navy); }
-.trust-label { font-size: 0.85rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+.admissions-label strong { color: var(--navy); font-weight: 700; }
+
+.creds-admissions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  border-top: none;
+}
+.creds-admissions li {
+  padding: 8px 14px;
+  border-bottom: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--navy);
+  letter-spacing: 0.02em;
+}
 
 .hero-portrait {
   margin: 0;
@@ -453,7 +470,6 @@ p { margin: 0 0 14px; }
   .primary-nav { gap: 16px; }
   .primary-nav a:not(.nav-cta) { display: none; }
   .practice-grid { grid-template-columns: 1fr; }
-  .trust-row { grid-template-columns: 1fr; gap: 14px; padding-top: 22px; }
   .contact-form { padding: 24px; }
   .contact-form .field-row { grid-template-columns: 1fr; }
   .contact-direct li { grid-template-columns: 80px 1fr; }
