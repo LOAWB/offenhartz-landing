@@ -47,18 +47,19 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-async function sendViaResend({ name, email, phone, company, message, ip }) {
+async function sendViaResend({ name, email, phone, company, message, ip, source }) {
   if (!RESEND_API_KEY) return { sent: false, reason: 'no_api_key' };
-  const subject = `New matter inquiry from ${name}`;
+  const subject = `New inquiry from ${name}`;
   const lines = [
     `From: ${name} <${email}>`,
     phone ? `Phone: ${phone}` : null,
-    company ? `Company / Matter: ${company}` : null,
+    company ? `Company: ${company}` : null,
+    source ? `Source: ${source}` : null,
     `IP: ${ip}`,
     `Received: ${new Date().toISOString()}`,
     '',
     'Message:',
-    message,
+    message || '(no message provided)',
   ].filter(Boolean).join('\n');
   const html = `
     <table style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;border-collapse:collapse;width:100%;max-width:600px">
@@ -111,18 +112,19 @@ app.post('/api/contact', async (req, res) => {
     const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
     if (rateLimited(ip)) return res.status(429).json({ ok: false, error: 'Too many requests' });
 
-    const { name, email, phone, company, message } = req.body || {};
-    if (typeof name !== 'string' || typeof email !== 'string' || typeof message !== 'string') {
+    const { name, email, phone, company, message, source } = req.body || {};
+    if (typeof name !== 'string' || typeof email !== 'string') {
       return res.status(400).json({ ok: false, error: 'Missing fields' });
     }
     const cleanName = name.trim().slice(0, 200);
     const cleanEmail = email.trim().slice(0, 200);
     const cleanPhone = (phone || '').trim().slice(0, 80);
     const cleanCompany = (company || '').trim().slice(0, 300);
-    const cleanMessage = message.trim().slice(0, 8000);
+    const cleanMessage = (message || '').trim().slice(0, 8000);
+    const cleanSource = (source || '').trim().slice(0, 60);
 
-    if (!cleanName || !cleanEmail || !cleanMessage) {
-      return res.status(400).json({ ok: false, error: 'Required fields missing' });
+    if (!cleanName || !cleanEmail || !cleanPhone) {
+      return res.status(400).json({ ok: false, error: 'Name, email, and phone are required' });
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
       return res.status(400).json({ ok: false, error: 'Invalid email' });
@@ -132,6 +134,7 @@ app.post('/api/contact', async (req, res) => {
       ts: new Date().toISOString(),
       ip,
       ua: (req.headers['user-agent'] || '').slice(0, 240),
+      source: cleanSource || 'unknown',
       name: cleanName,
       email: cleanEmail,
       phone: cleanPhone,
